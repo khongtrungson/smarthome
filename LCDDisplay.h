@@ -15,8 +15,10 @@ public:
     // Khởi tạo LCD
     void begin() {
         lcd.init();
-        lcd.backlight();
+        lcd.noBacklight();
         lcd.clear();
+        printLine(0, "LCD Initialized");
+        printLine(1, "PASS:");
     }
 
     // Xóa màn hình

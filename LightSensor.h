@@ -3,53 +3,60 @@
 
 class LightSensor {
 private:
-    uint8_t _pin;          // Chân cảm biến analog
-    int _lastValue;        // Giá trị đọc lần gần nhất
-    int _level;            // Cấp độ sáng (0-4)
-    int _lastLevel = -1;  // lưu level trước đó, -1 = chưa có giá trị
-    int _thresholds[4] = {200, 400, 600, 800};  // Ngưỡng chia cấp độ
-    MyLed* _led;            // Đối tượng MyLed để điều khiển LED
-public:
-    // Constructor
-    LightSensor(uint8_t pin, MyLed& led) : 
-    _pin(pin), _lastValue(0), _level(0), _led(&led) {
-    
-    }
+    uint8_t _pin;          
+    int _lastValue;        
+    int _level;            // 0 = tối, 1 = sáng
+    int _lastLevel;        
+    unsigned long _prevUpdateMillis; 
+    MyLed* _led;           
+    NeoPixelRing* _ring;   
+    LCDDisplay* _lcd;      
 
-    // Hàm begin() để khởi tạo
+public:
+    LightSensor(uint8_t pin, MyLed* led, NeoPixelRing* ring, LCDDisplay* lcd) 
+        : _pin(pin), _led(led), _ring(ring), _lcd(lcd),
+          _lastValue(0), _level(0), _lastLevel(-1), _prevUpdateMillis(0) {}
+
     void begin() {
-        pinMode(_pin, INPUT);  // Đặt chân là input
+        pinMode(_pin, INPUT);  // digital input
         _lastValue = 0;
         _level = 0;
-        _led->on();
+        _lastLevel = -1;
     }
 
-    // Hàm đọc và cập nhật trạng thái
     void update() {
-        _lastValue = analogRead(_pin);
-        _level = calculateLevel(_lastValue);
-         if (_level != _lastLevel) {
-            // do something when level changes
-            _led->setBrightness((_level + 1) * 51); // Cấp độ 0-4 tương ứng với độ sáng 0-255
+        unsigned long now = millis();
+        const unsigned long updateInterval = 500; // kiểm tra mỗi 0.5s
+        if (now - _prevUpdateMillis < updateInterval) return;
+        _prevUpdateMillis = now;
+
+        // Đọc giá trị digital (0 hoặc 1)
+        _lastValue = digitalRead(_pin);  
+        _level = (_lastValue == HIGH) ? 1 : 0;
+
+        // Chỉ cập nhật khi level thay đổi
+        if (_level != _lastLevel) {
+            Serial.print("Light Level: ");
+            Serial.println(_level);
+
+            if (_lcd) {
+                _lcd->printLine(0, "Light:" + String(!_level));
+            }
+            // Cập nhật LED theo level
+            if (_led) {
+                if (_level == 0) {
+                    _led->off();   // tối -> bật LED
+                } else {
+                    _led->on();  // sáng -> tắt LED
+                }
+            }
+
             _lastLevel = _level;
-             Serial.print("Light level changed: ");
-             Serial.println(_level);
         }
     }
 
-    // Xác định cấp độ sáng từ giá trị analog
-    int calculateLevel(int value) {
-        if (value < _thresholds[0]) return 0;
-        else if (value < _thresholds[1]) return 1;
-        else if (value < _thresholds[2]) return 2;
-        else if (value < _thresholds[3]) return 3;
-        else return 4;
-    }
-
-    // Getter
-    int getValue() const { return _lastValue; }
-    int getLevel() const { return _level; }
-
+    int getValue() const { return _lastValue; }  // 0 hoặc 1
+    int getLevel() const { return _level; }      // 0 = tối, 1 = sáng
 };
 
 #endif

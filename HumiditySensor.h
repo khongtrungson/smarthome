@@ -19,8 +19,6 @@ public:
     // Khởi tạo chân
     void begin() {
         pinMode(_pin, INPUT);
-        if (_led) _led->off();
-        if (_buzzer) _buzzer->off();
     }
 
     // Cập nhật trạng thái, bật/tắt LED và buzzer
