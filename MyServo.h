@@ -34,6 +34,7 @@ public:
         servo.attach(pin);
         servo.write(initialAngle);  // Đưa servo về vị trí ban đầu
     }
+    
 
     // Tùy chọn: Hàm để reset và quay lại target
     void resetAndGo() {

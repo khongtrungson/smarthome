@@ -11,7 +11,7 @@ private:
     unsigned long rainbowDuration;      // thời gian chạy rainbow rotate (ms)
     unsigned long prevMillis;
     int effectType;   // 0: none, 1: chase, 2: rainbow tĩnh, 3: rainbow xoay
-
+    int brightness = 50;
     // Chase
     int currentIndex; 
     uint32_t chaseColor;
@@ -81,7 +81,7 @@ public:
         pinMode(strip.getPin() , OUTPUT);
         strip.begin();
         strip.show();  
-        strip.setBrightness(50); // độ sáng 0-255
+        strip.setBrightness(brightness); // độ sáng 0-255
     }
 
     void fill(uint8_t r, uint8_t g, uint8_t b) {
@@ -142,9 +142,27 @@ public:
     void setBrightness(int value) {
         // Serial.print("NeoPixel Brightness: "+String(value)+"\n");
         strip.show();
-        strip.setBrightness(value);
+        strip.setBrightness(brightness + value);
         strip.show();
     }
+    void turnOff() {
+    strip.clear();
+    strip.show();
+    isActive = false;
+    effectType = 0;
+    currentIndex = 0;
+    hue = 0;
+}
+
+void toggle() {
+    if (isActive) {
+        turnOff();
+    } else {
+        // Bật lại hiệu ứng cuối cùng
+        isActive = true;
+        effectType = 0;
+    }
+}
 };
 
 #endif
