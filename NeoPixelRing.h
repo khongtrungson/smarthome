@@ -80,7 +80,7 @@ public:
     void begin() {
         pinMode(strip.getPin() , OUTPUT);
         strip.begin();
-        strip.show();  
+        // strip.show();  
         strip.setBrightness(brightness); // độ sáng 0-255
     }
 

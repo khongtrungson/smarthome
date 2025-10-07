@@ -32,7 +32,7 @@ public:
     // Khởi tạo servo
     void begin() {
         servo.attach(pin);
-        servo.write(initialAngle);  // Đưa servo về vị trí ban đầu
+        // servo.write(initialAngle);  // Đưa servo về vị trí ban đầu
     }
     
 

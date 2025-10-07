@@ -1,7 +1,7 @@
 #ifndef IR1838T_H
 #define IR1838T_H
 
-#include <IRremote.hpp> // Thay vì <IRremote.h>
+#include <IRremote.hpp>
 
 class IR1838T {
 private:
@@ -15,32 +15,35 @@ private:
     bool newCodeAvailable;
     MyServo* _servo;
     NeoPixelRing* _ring;
+    Buzzer* _buzzer;
 
 public:
     // ====== Các mã button ======
-    static const unsigned long BTN_POWER      = 0xFFA25D;
-    static const unsigned long BTN_FUNC_STOP  = 0xFFE21D;
-    static const unsigned long BTN_VOL_PLUS   = 0xFF629D;
-    static const unsigned long BTN_BACK       = 0xFF22DD;
-    static const unsigned long BTN_PLAY_PAUSE = 0xFF02FD;
-    static const unsigned long BTN_NEXT       = 0xFFC23D;
-    static const unsigned long BTN_VOL_MINUS  = 0xFFE01F;
-    static const unsigned long BTN_EQ         = 0xFFA857;
-    static const unsigned long BTN_0          = 0xFF6897;
-    static const unsigned long BTN_100_PLUS   = 0xFF9867;
-    static const unsigned long BTN_200_PLUS   = 0xFFB04F;
-    static const unsigned long BTN_1          = 0xFF30CF;
-    static const unsigned long BTN_2          = 0xFF18E7;
-    static const unsigned long BTN_3          = 0xFF7A85;
-    static const unsigned long BTN_4          = 0xFF10EF;
-    static const unsigned long BTN_5          = 0xFF38C7;
-    static const unsigned long BTN_6          = 0xFF5AA5;
-    static const unsigned long BTN_7          = 0xFF42BD;
-    static const unsigned long BTN_8          = 0xFF4AB5;
-    static const unsigned long BTN_9          = 0xFF52AD;
+    static const unsigned long BTN_POWER      = 0xBA45FF00; // Giữ nguyên nút Power
+    static const unsigned long BTN_MENU       = 0xB847FF00;
+    static const unsigned long BTN_TEST       = 0xBB44FF00;
+    static const unsigned long BTN_VOL_PLUS   = 0xBF40FF00; // +
+    static const unsigned long BTN_BACK       = 0xBC43FF00;
+    static const unsigned long BTN_LEFT       = 0xF807FF00;
+    static const unsigned long BTN_PAUSE      = 0xEA15FF00;
+    static const unsigned long BTN_RIGHT      = 0xF609FF00;
+    static const unsigned long BTN_VOL_MINUS  = 0xE619FF00; // -
+    static const unsigned long BTN_C          = 0xF20DFF00;
+
+    // ====== Các mã số ======
+    static const unsigned long BTN_0          = 0xE916FF00;
+    static const unsigned long BTN_1          = 0xF30CFF00;
+    static const unsigned long BTN_2          = 0xE718FF00;
+    static const unsigned long BTN_3          = 0xA15EFF00;
+    static const unsigned long BTN_4          = 0xF708FF00;
+    static const unsigned long BTN_5          = 0xE31CFF00;
+    static const unsigned long BTN_6          = 0xA55AFF00;
+    static const unsigned long BTN_7          = 0xBD42FF00;
+    static const unsigned long BTN_8          = 0xAD52FF00;
+    static const unsigned long BTN_9          = 0xB54AFF00;
 
     // ====== Constructor ======
-    IR1838T(int pin, MyServo* servo = nullptr, NeoPixelRing* ring = nullptr, unsigned long debounce = 150)
+    IR1838T(int pin, MyServo* servo = nullptr, NeoPixelRing* ring = nullptr, Buzzer* buzzer = nullptr, unsigned long debounce = 150)
         : recvPin(pin),
           debounceDelay(debounce),
           lastCode(0),
@@ -48,19 +51,19 @@ public:
           lastDecodeTime(0),
           newCodeAvailable(false),
           _servo(servo),
-          _ring(ring)
+          _ring(ring),
+        _buzzer(buzzer)
     {}
 
     // ====== Khởi tạo ======
     void begin() {
-        IrReceiver.begin(recvPin, ENABLE_LED_FEEDBACK); // Bắt đầu nhận tín hiệu IR
+        IrReceiver.begin(recvPin, ENABLE_LED_FEEDBACK, 13);
         Serial.println("IR Receiver Started...");
     }
 
     // ====== Cập nhật & xử lý tín hiệu ======
     void update() {
         if (IrReceiver.decode()) {
-            Serial.println("IR signal received");
             unsigned long now = millis();
             unsigned long decodedCode = IrReceiver.decodedIRData.decodedRawData;
 
@@ -82,33 +85,27 @@ public:
             IrReceiver.resume();
         }
 
-        // Khi có mã mới, xử lý theo mã
+        // Khi có mã mới
         if (newCodeAvailable) {
             newCodeAvailable = false;
 
             switch (currentCode) {
-                case BTN_POWER:       handlePower();       break;
-                case BTN_FUNC_STOP:   handleFuncStop();    break;
-                case BTN_VOL_PLUS:    handleVolPlus();     break;
-                case BTN_VOL_MINUS:   handleVolMinus();    break;
-                case BTN_PLAY_PAUSE:  handlePlayPause();   break;
-                case BTN_NEXT:        handleNext();        break;
-                case BTN_BACK:        handleBack();        break;
-                case BTN_EQ:          handleEq();          break;
+                case BTN_POWER:      handlePower();      break;
+                case BTN_MENU:       handleMenu();       break;
+                case BTN_TEST:       handleTest();       break;
+                case BTN_VOL_PLUS:   handleVolPlus();    break;
+                case BTN_VOL_MINUS:  handleVolMinus();   break;
+                case BTN_PAUSE:      handlePause();      break;
+                case BTN_BACK:       handleBack();       break;
+                case BTN_LEFT:       handleLeft();       break;
+                case BTN_RIGHT:      handleRight();      break;
+                case BTN_C:          handleC();          break;
 
-                case BTN_0:           handleDigit(0);      break;
-                case BTN_1:           handleDigit(1);      break;
-                case BTN_2:           handleDigit(2);      break;
-                case BTN_3:           handleDigit(3);      break;
-                case BTN_4:           handleDigit(4);      break;
-                case BTN_5:           handleDigit(5);      break;
-                case BTN_6:           handleDigit(6);      break;
-                case BTN_7:           handleDigit(7);      break;
-                case BTN_8:           handleDigit(8);      break;
-                case BTN_9:           handleDigit(9);      break;
-
-                case BTN_100_PLUS:    handle100Plus();     break;
-                case BTN_200_PLUS:    handle200Plus();     break;
+                case BTN_0: case BTN_1: case BTN_2: case BTN_3:
+                case BTN_4: case BTN_5: case BTN_6: case BTN_7:
+                case BTN_8: case BTN_9:
+                    handleDigit(currentCode);
+                    break;
 
                 default:
                     Serial.print("Unknown code: ");
@@ -121,48 +118,70 @@ public:
 private:
     // ====== Các hàm xử lý hành động ======
     void handlePower() {
+        Serial.println("[ACTION] Power");
         if (_ring) _ring->toggle();
     }
 
+    void handleMenu() {
+        Serial.println("[ACTION] Menu");
+    }
+
+    void handleTest() {
+        _ring->startRainbowRotate(2,3000);
+        Serial.println("[ACTION] Test");
+    }
+
     void handleVolPlus() {
+        Serial.println("[ACTION] Volume +");
         if (_ring) _ring->setBrightness(10);
     }
 
     void handleVolMinus() {
+        Serial.println("[ACTION] Volume -");
         if (_ring) _ring->setBrightness(-10);
     }
 
-    void handleFuncStop() {
-        Serial.println("[ACTION] Function/Stop");
+    void handlePause() {
+        Serial.println("[ACTION] Pause");
+        if (_servo) _servo->resetAndGo();
     }
 
     void handleBack() {
         Serial.println("[ACTION] Back");
     }
 
-    void handlePlayPause() {
-        if (_servo) _servo->resetAndGo();
+    void handleLeft() {
+        Serial.println("[ACTION] Left");
+        _buzzer->playMelody(jingleBells.notes, jingleBells.durations, jingleBells.length);
+
     }
 
-    void handleNext() {
-        Serial.println("[ACTION] Next");
+    void handleRight() {
+        Serial.println("[ACTION] Right");
+        _buzzer->playMelody(gentlePiano.notes, gentlePiano.durations, gentlePiano.length);
     }
 
-    void handleEq() {
-        Serial.println("[ACTION] EQ");
+    void handleC() {
+        Serial.println("[ACTION] C (Clear)");
     }
 
-    void handleDigit(int digit) {
-        Serial.print("[ACTION] Number ");
-        Serial.println(digit);
-    }
+    void handleDigit(unsigned long code) {
+        int digit = -1;
+        if (code == BTN_0) digit = 0;
+        else if (code == BTN_1) digit = 1;
+        else if (code == BTN_2) digit = 2;
+        else if (code == BTN_3) digit = 3;
+        else if (code == BTN_4) digit = 4;
+        else if (code == BTN_5) digit = 5;
+        else if (code == BTN_6) digit = 6;
+        else if (code == BTN_7) digit = 7;
+        else if (code == BTN_8) digit = 8;
+        else if (code == BTN_9) digit = 9;
 
-    void handle100Plus() {
-        Serial.println("[ACTION] 100+");
-    }
-
-    void handle200Plus() {
-        Serial.println("[ACTION] 200+");
+        if (digit != -1) {
+            Serial.print("[ACTION] Number ");
+            Serial.println(digit);
+        }
     }
 };
 

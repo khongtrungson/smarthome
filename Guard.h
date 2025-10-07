@@ -26,7 +26,7 @@ class Guard {
         _failCount = 0; // reset số lần nhập sai
         _lockedOut = false;
         _lcd->printLine(1, "Unlocked!");
-        _buzzer->playMelody(HappyBirthday.notes, HappyBirthday.durations, HappyBirthday.length);
+        _buzzer->playMelody(welcomeChime.notes, welcomeChime.durations, welcomeChime.length);
         _ring->startRainbowRotate(2,3000); // hiệu ứng rainbow xoay
         return true;
       } else {

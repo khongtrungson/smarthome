@@ -38,7 +38,7 @@ LightSensor lightSensor(LIGHT_SENSOR_PIN, &led, &ring, &lcd);
 VibrationSensor vibrationSensor(VIBRATION_SENSOR_PIN, &ring, &lcd, &buzzer, &led, 3, 300);
 const char* PASSWORD = "1234";
 Guard guard(PASSWORD, rowPins, colPins, &servo, &buzzer, &lcd, &ring);
-IR1838T irReceiver(IR1838T_PIN, &servo, &ring);
+IR1838T irReceiver(IR1838T_PIN, &servo, &ring, &buzzer);
 TemperatureSensor temperatureSensor(TemperatureSensor_PIN, &lcd);
 
 void setup() {
@@ -53,14 +53,14 @@ void setup() {
   led.begin();
   guard.begin();
   vibrationSensor.begin();
-  // irReceiver.begin();
+  irReceiver.begin();
 }
 
 void loop() {
   guard.update();
   lightSensor.update();
   vibrationSensor.update();
-  // irReceiver.update();
+  irReceiver.update();
   temperatureSensor.update();
   led.update();
   ring.update();
