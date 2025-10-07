@@ -1,22 +1,20 @@
 #ifndef IR1838T_H
 #define IR1838T_H
-#include <IRremote.h>
+
+#include <IRremote.hpp> // Thay vì <IRremote.h>
 
 class IR1838T {
 private:
     int recvPin;
-    IRrecv* irrecv;
-    decode_results results;
-    
+
     unsigned long lastCode;
     unsigned long currentCode;
     unsigned long lastDecodeTime;
     unsigned long debounceDelay;
-    
-    bool newCodeAvailable;
-    MyServo* _servo; 
-    NeoPixelRing* _ring;
 
+    bool newCodeAvailable;
+    MyServo* _servo;
+    NeoPixelRing* _ring;
 
 public:
     // ====== Các mã button ======
@@ -51,26 +49,23 @@ public:
           newCodeAvailable(false),
           _servo(servo),
           _ring(ring)
-    {
-        irrecv = new IRrecv(recvPin);
-    }
+    {}
 
     // ====== Khởi tạo ======
     void begin() {
-        if (irrecv != nullptr) {
-            irrecv->enableIRIn();
-            Serial.println("IR Receiver Started...");
-        }
+        IrReceiver.begin(recvPin, ENABLE_LED_FEEDBACK); // Bắt đầu nhận tín hiệu IR
+        Serial.println("IR Receiver Started...");
     }
 
     // ====== Cập nhật & xử lý tín hiệu ======
     void update() {
-        if (irrecv->decode(&results)) {
+        if (IrReceiver.decode()) {
+            Serial.println("IR signal received");
             unsigned long now = millis();
-            unsigned long decodedCode = results.value;
+            unsigned long decodedCode = IrReceiver.decodedIRData.decodedRawData;
 
             if (decodedCode == 0xFFFFFFFF || decodedCode == 0) {
-                irrecv->resume();
+                IrReceiver.resume();
                 return;
             }
 
@@ -80,14 +75,16 @@ public:
                 lastCode = decodedCode;
                 lastDecodeTime = now;
                 newCodeAvailable = true;
+                Serial.print("Decoded IR code: ");
+                Serial.println(currentCode, HEX);
             }
 
-            irrecv->resume();
+            IrReceiver.resume();
         }
 
         // Khi có mã mới, xử lý theo mã
         if (newCodeAvailable) {
-            newCodeAvailable = false; // reset flag ngay khi xử lý
+            newCodeAvailable = false;
 
             switch (currentCode) {
                 case BTN_POWER:       handlePower();       break;
@@ -124,18 +121,15 @@ public:
 private:
     // ====== Các hàm xử lý hành động ======
     void handlePower() {
-        // bật/tắt NeoPixel
-        _ring->toggle();
+        if (_ring) _ring->toggle();
     }
 
     void handleVolPlus() {
-        // tăng sáng NeoPixel
-        _ring->setBrightness(10);
+        if (_ring) _ring->setBrightness(10);
     }
 
     void handleVolMinus() {
-        // giảm sáng NeoPixel
-        _ring->setBrightness(-10);
+        if (_ring) _ring->setBrightness(-10);
     }
 
     void handleFuncStop() {
@@ -143,14 +137,11 @@ private:
     }
 
     void handleBack() {
-    
+        Serial.println("[ACTION] Back");
     }
 
     void handlePlayPause() {
-        //mở cửa
-        if (_servo) {
-            _servo->resetAndGo();
-        }
+        if (_servo) _servo->resetAndGo();
     }
 
     void handleNext() {
@@ -174,4 +165,5 @@ private:
         Serial.println("[ACTION] 200+");
     }
 };
+
 #endif

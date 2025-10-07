@@ -27,10 +27,16 @@ public:
     }
 
     // In chuỗi ra vị trí x, y
-    void printAt(uint8_t col, uint8_t row, const String &text) {
-        lcd.setCursor(col, row);
-        lcd.print(text);
+ void printAt(uint8_t row, uint8_t col, const String &text) {
+    lcd.setCursor(col, row);
+    // Xóa vùng cũ (ví dụ: 10 ký tự)
+    for (uint8_t i = col; i < 16; i++) {
+        lcd.print(" ");
     }
+    lcd.setCursor(col, row);
+    lcd.print(text);
+}
+
 
     // In 1 dòng (ghi đè toàn bộ dòng)
     void printLine(uint8_t row, const String &text) {
