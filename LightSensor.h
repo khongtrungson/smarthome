@@ -39,9 +39,6 @@ public:
             Serial.print("Light Level: ");
             Serial.println(_level);
 
-            if (_lcd) {
-                _lcd->printLine(0, "Light:" + String(!_level));
-            }
             // Cập nhật LED theo level
             if (_led) {
                 if (_level == 0) {

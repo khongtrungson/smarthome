@@ -6,20 +6,19 @@
 class IR1838T {
 private:
     int recvPin;
-
     unsigned long lastCode;
     unsigned long currentCode;
     unsigned long lastDecodeTime;
     unsigned long debounceDelay;
-
     bool newCodeAvailable;
+    
     MyServo* _servo;
     NeoPixelRing* _ring;
     Buzzer* _buzzer;
 
 public:
     // ====== Các mã button ======
-    static const unsigned long BTN_POWER      = 0xBA45FF00; // Giữ nguyên nút Power
+    static const unsigned long BTN_POWER      = 0xBA45FF00;
     static const unsigned long BTN_MENU       = 0xB847FF00;
     static const unsigned long BTN_TEST       = 0xBB44FF00;
     static const unsigned long BTN_VOL_PLUS   = 0xBF40FF00; // +
@@ -43,7 +42,8 @@ public:
     static const unsigned long BTN_9          = 0xB54AFF00;
 
     // ====== Constructor ======
-    IR1838T(int pin, MyServo* servo = nullptr, NeoPixelRing* ring = nullptr, Buzzer* buzzer = nullptr, unsigned long debounce = 150)
+    IR1838T(int pin, MyServo* servo = nullptr, NeoPixelRing* ring = nullptr, 
+            Buzzer* buzzer = nullptr, unsigned long debounce = 150)
         : recvPin(pin),
           debounceDelay(debounce),
           lastCode(0),
@@ -52,7 +52,7 @@ public:
           newCodeAvailable(false),
           _servo(servo),
           _ring(ring),
-        _buzzer(buzzer)
+          _buzzer(buzzer)
     {}
 
     // ====== Khởi tạo ======
@@ -67,6 +67,7 @@ public:
             unsigned long now = millis();
             unsigned long decodedCode = IrReceiver.decodedIRData.decodedRawData;
 
+            // Bỏ qua mã lặp lại
             if (decodedCode == 0xFFFFFFFF || decodedCode == 0) {
                 IrReceiver.resume();
                 return;
@@ -85,21 +86,21 @@ public:
             IrReceiver.resume();
         }
 
-        // Khi có mã mới
+        // Xử lý khi có mã mới
         if (newCodeAvailable) {
             newCodeAvailable = false;
 
             switch (currentCode) {
-                case BTN_POWER:      handlePower();      break;
-                case BTN_MENU:       handleMenu();       break;
-                case BTN_TEST:       handleTest();       break;
-                case BTN_VOL_PLUS:   handleVolPlus();    break;
-                case BTN_VOL_MINUS:  handleVolMinus();   break;
-                case BTN_PAUSE:      handlePause();      break;
-                case BTN_BACK:       handleBack();       break;
-                case BTN_LEFT:       handleLeft();       break;
-                case BTN_RIGHT:      handleRight();      break;
-                case BTN_C:          handleC();          break;
+                case BTN_POWER:      handlePower();         break;
+                case BTN_MENU:       handleMenu();          break;
+                case BTN_TEST:       handleTest();          break;
+                case BTN_VOL_PLUS:   handleVolPlus();       break;
+                case BTN_VOL_MINUS:  handleVolMinus();      break;
+                case BTN_PAUSE:      handlePause();         break;
+                case BTN_BACK:       handleBack();          break;
+                case BTN_LEFT:       handleLeft();          break;
+                case BTN_RIGHT:      handleRight();         break;
+                case BTN_C:          handleC();             break;
 
                 case BTN_0: case BTN_1: case BTN_2: case BTN_3:
                 case BTN_4: case BTN_5: case BTN_6: case BTN_7:
@@ -124,11 +125,12 @@ private:
 
     void handleMenu() {
         Serial.println("[ACTION] Menu");
+        if (_buzzer) _buzzer->playMelody(welcomeChime.notes, welcomeChime.durations, welcomeChime.length);
     }
 
     void handleTest() {
-        _ring->startRainbowRotate(2,3000);
         Serial.println("[ACTION] Test");
+        if (_ring) _ring->startRainbowRotate(2, 3000);
     }
 
     void handleVolPlus() {
@@ -151,32 +153,63 @@ private:
     }
 
     void handleLeft() {
-        Serial.println("[ACTION] Left");
-        _buzzer->playMelody(jingleBells.notes, jingleBells.durations, jingleBells.length);
-
+        Serial.println("[ACTION] Left - Jingle Bells");
+        if (_buzzer) _buzzer->playMelody(jingleBells.notes, jingleBells.durations, jingleBells.length);
     }
 
     void handleRight() {
-        Serial.println("[ACTION] Right");
-        _buzzer->playMelody(gentlePiano.notes, gentlePiano.durations, gentlePiano.length);
+        Serial.println("[ACTION] Right - Gentle Piano");
+        if (_buzzer) _buzzer->playMelody(gentlePiano.notes, gentlePiano.durations, gentlePiano.length);
     }
 
     void handleC() {
         Serial.println("[ACTION] C (Clear)");
+        if (_ring) _ring->fill(0, 0, 0); // Tắt hết LED
     }
 
     void handleDigit(unsigned long code) {
         int digit = -1;
-        if (code == BTN_0) digit = 0;
-        else if (code == BTN_1) digit = 1;
-        else if (code == BTN_2) digit = 2;
-        else if (code == BTN_3) digit = 3;
-        else if (code == BTN_4) digit = 4;
-        else if (code == BTN_5) digit = 5;
-        else if (code == BTN_6) digit = 6;
-        else if (code == BTN_7) digit = 7;
-        else if (code == BTN_8) digit = 8;
-        else if (code == BTN_9) digit = 9;
+        
+        if (code == BTN_0) {
+            if (_ring) _ring->fill(255, 255, 255); // Trắng
+            digit = 0;
+        }
+        else if (code == BTN_1) {
+            if (_ring) _ring->fill(255, 0, 0); // Đỏ
+            digit = 1;
+        }
+        else if (code == BTN_2) {
+            if (_ring) _ring->fill(255, 165, 0); // Cam
+            digit = 2;
+        }
+        else if (code == BTN_3) {
+            if (_ring) _ring->fill(255, 255, 0); // Vàng
+            digit = 3;
+        }
+        else if (code == BTN_4) {
+            if (_ring) _ring->fill(0, 255, 0); // Xanh lá
+            digit = 4;
+        }
+        else if (code == BTN_5) {
+            if (_ring) _ring->fill(0, 255, 255); // Xanh cyan
+            digit = 5;
+        }
+        else if (code == BTN_6) {
+            if (_ring) _ring->fill(0, 0, 255); // Xanh dương
+            digit = 6;
+        }
+        else if (code == BTN_7) {
+            if (_ring) _ring->fill(128, 0, 255); // Tím
+            digit = 7;
+        }
+        else if (code == BTN_8) {
+            if (_ring) _ring->fill(255, 0, 255); // Hồng tím (Magenta)
+            digit = 8;
+        }
+        else if (code == BTN_9) {
+            if (_ring) _ring->fill(255, 192, 203); // Hồng nhạt
+            digit = 9;
+        }
 
         if (digit != -1) {
             Serial.print("[ACTION] Number ");

@@ -20,10 +20,12 @@ class Guard {
     NeoPixelRing* _ring; // Đối tượng vòng LED để cảnh báo (nếu cần)
     // Kiểm tra mật khẩu nhập vào
     bool checkPassword() {
+      _lcd->printAt(0, 0, "F:" + _failCount);
       if (_input == _password) {
         // Mật khẩu đúng, thực hiện hành động mở khóa ở đây
         _servo->resetAndGo(); // quay servo về vị trí mở khóa
         _failCount = 0; // reset số lần nhập sai
+         _lcd->printAt(0, 0, "F:" + _failCount);
         _lockedOut = false;
         _lcd->printLine(1, "Unlocked!");
         _buzzer->playMelody(welcomeChime.notes, welcomeChime.durations, welcomeChime.length);
@@ -38,6 +40,7 @@ class Guard {
           // quá 3 lần thì đợi 10s mới nhập tiếp được
         }
         _failCount++;
+         _lcd->printAt(0, 0, "F:" + _failCount);
         return false;
       }
     }
