@@ -20,7 +20,7 @@ class MyServo {
 
 public:
     // Constructor
-    MyServo(int servoPin, int startAngle = 90, int moveAngle = 0, unsigned long delayMs = 3000) {
+    MyServo(int servoPin, int startAngle = 90, int moveAngle = 0, unsigned long delayMs = 4000) {
         pin = servoPin;
         initialAngle = startAngle;
         targetAngle = moveAngle;

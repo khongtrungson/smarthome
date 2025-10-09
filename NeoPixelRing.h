@@ -139,10 +139,17 @@ public:
         return isActive;
     }
 
+    int getBrightness() {
+        return brightness;
+    }
+
     void setBrightness(int value) {
         // Serial.print("NeoPixel Brightness: "+String(value)+"\n");
         strip.show();
-        strip.setBrightness(brightness + value);
+        if (brightness + value < 0) brightness = 0;
+        else if (brightness + value > 255) brightness = 255;
+        else brightness += value;
+        strip.setBrightness(brightness);
         strip.show();
     }
     void turnOff() {

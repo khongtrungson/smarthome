@@ -1,5 +1,6 @@
 #ifndef MY_LED_H
 #define MY_LED_H
+
 enum MyLedState {
     OFF,
     ON,
@@ -9,17 +10,20 @@ enum MyLedState {
 class MyLed {
   private:
     int pin;
-    int brightness;       // độ sáng (0-255)
-    MyLedState state;     // Trạng thái LED
-    unsigned long delayMs; // thời gian sáng (ms)
-    unsigned long prevMillis; // lưu thời điểm lần thay đổi cuối
-    int blinkNum;        // số lần nhấp nháy đã thực hiện
-    bool isActive;
+    int brightness;         // độ sáng (0-255)
+    MyLedState state;       // Trạng thái hiện tại
+    MyLedState prevState;   // Trạng thái trước khi blink
+    unsigned long delayMs;  // thời gian sáng/tắt mỗi chu kỳ (ms)
+    unsigned long prevMillis;
+    int blinkNum;           // số lần nhấp nháy còn lại
+    bool isActive;          // đang bật trong chu kỳ blink
+
   public:
     MyLed(int p) {
       pin = p;
-      state = OFF;
       brightness = 255;
+      state = OFF;
+      prevState = OFF;
       delayMs = 500;
       prevMillis = 0;
       blinkNum = 0;
@@ -28,6 +32,7 @@ class MyLed {
 
     void begin() {
       pinMode(pin, OUTPUT);
+      analogWrite(pin, 0);
     }
 
     void on() {
@@ -41,10 +46,11 @@ class MyLed {
     }
 
     void blink(unsigned long intervalMs, int count) {
+      prevState = state;      // Lưu trạng thái trước khi nhấp nháy
       state = BLINKING;
       delayMs = intervalMs;
+      blinkNum = count * 2;   // mỗi chu kỳ gồm sáng + tắt
       isActive = true;
-      blinkNum = count;
       prevMillis = millis();
     }
 
@@ -55,43 +61,26 @@ class MyLed {
       }
     }
 
-    // Gọi trong loop() để cập nhật trạng thái
     void update() {
-      switch (state) {
-        case OFF:
-          // Không làm gì
-          break;
-        case ON:
-          // Không làm gì
-          break;
-        case BLINKING:
-          unsigned long currentMillis = millis();
-          if(blinkNum > 0){
-            // do something
-            bool isPass = currentMillis - prevMillis >= delayMs;
-            if(isActive && !isPass){
-             analogWrite(pin, brightness);
-            }
-            else if(isActive && isPass){
-              isActive = false;
-              prevMillis = currentMillis;
-              analogWrite(pin, 0);
-              blinkNum--;
-            }
-            else if(!isActive && !isPass){
-              analogWrite(pin, 0);
-            }
-            else{
-              isActive = true;
-              prevMillis = currentMillis;
-              analogWrite(pin, brightness);
-            }
-          }else{
-            off();
-            isActive = false;
+      if (state == BLINKING) {
+        unsigned long currentMillis = millis();
+        if (currentMillis - prevMillis >= delayMs) {
+          prevMillis = currentMillis;
+          isActive = !isActive; // Đảo trạng thái sáng/tắt
+          blinkNum--;
+
+          if (isActive) analogWrite(pin, brightness);
+          else analogWrite(pin, 0);
+
+          // Hết số lần blink → khôi phục trạng thái trước đó
+          if (blinkNum <= 0) {
+            state = prevState;
+            if (prevState == ON) analogWrite(pin, brightness);
+            else analogWrite(pin, 0);
           }
-          break;
+        }
       }
     }
 };
+
 #endif

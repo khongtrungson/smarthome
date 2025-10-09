@@ -17,7 +17,7 @@ private:
 
 public:
     // Constructor
-    VibrationSensor(int pin, NeoPixelRing* ring, LCDDisplay* lcd, Buzzer* buzzer, MyLed* led, unsigned int threshold = 5, unsigned long debounceTime = 200) {
+    VibrationSensor(int pin, NeoPixelRing* ring, LCDDisplay* lcd, Buzzer* buzzer, MyLed* led, unsigned int threshold = 30, unsigned long debounceTime = 400) {
         _pin = pin;
         _ring = ring;
         _lcd = lcd;
@@ -60,7 +60,7 @@ public:
 
     void checkThreshold() {
         if (_count >= _threshold) {
-            _buzzer->beep(1000, 3000); // beep 1s
+            _buzzer->beep(2000); // beep 2s
             _led->blink(500, 5); // nhấp nháy LED 5 lần
             _ring->fill(255, 0, 0); // đỏ
             _count = 0; // reset count sau khi đạt ngưỡng

@@ -15,6 +15,7 @@ private:
     MyServo* _servo;
     NeoPixelRing* _ring;
     Buzzer* _buzzer;
+    MyLed* _led;
 
 public:
     // ====== Các mã button ======
@@ -43,7 +44,7 @@ public:
 
     // ====== Constructor ======
     IR1838T(int pin, MyServo* servo = nullptr, NeoPixelRing* ring = nullptr, 
-            Buzzer* buzzer = nullptr, unsigned long debounce = 150)
+            Buzzer* buzzer = nullptr, MyLed* led = nullptr, unsigned long debounce = 150)
         : recvPin(pin),
           debounceDelay(debounce),
           lastCode(0),
@@ -52,12 +53,14 @@ public:
           newCodeAvailable(false),
           _servo(servo),
           _ring(ring),
-          _buzzer(buzzer)
+          _buzzer(buzzer),
+          _led(led)
     {}
 
     // ====== Khởi tạo ======
     void begin() {
-        IrReceiver.begin(recvPin, ENABLE_LED_FEEDBACK, 13);
+        IrReceiver.begin(recvPin, DISABLE_LED_FEEDBACK);
+        // Chỉ enable protocol 8
         Serial.println("IR Receiver Started...");
     }
 
@@ -79,8 +82,10 @@ public:
                 lastCode = decodedCode;
                 lastDecodeTime = now;
                 newCodeAvailable = true;
-                Serial.print("Decoded IR code: ");
+               Serial.print("Decoded IR code: ");
                 Serial.println(currentCode, HEX);
+                Serial.println(IrReceiver.decodedIRData.protocol);
+
             }
 
             IrReceiver.resume();
@@ -120,56 +125,69 @@ private:
     // ====== Các hàm xử lý hành động ======
     void handlePower() {
         Serial.println("[ACTION] Power");
+        _led->blink(100,2);
         if (_ring) _ring->toggle();
     }
 
     void handleMenu() {
+        _led->blink(100,2);
         Serial.println("[ACTION] Menu");
-        if (_buzzer) _buzzer->playMelody(welcomeChime.notes, welcomeChime.durations, welcomeChime.length);
+        // if (_buzzer) _buzzer->playMelody(welcomeChime.notes, welcomeChime.durations, welcomeChime.length);
     }
 
     void handleTest() {
+        _led->blink(100,2);
         Serial.println("[ACTION] Test");
         if (_ring) _ring->startRainbowRotate(2, 3000);
     }
 
     void handleVolPlus() {
+        _led->blink(100,2);
         Serial.println("[ACTION] Volume +");
         if (_ring) _ring->setBrightness(10);
     }
 
     void handleVolMinus() {
+        _led->blink(100,2);
         Serial.println("[ACTION] Volume -");
         if (_ring) _ring->setBrightness(-10);
     }
 
     void handlePause() {
+        _led->blink(100,2);
         Serial.println("[ACTION] Pause");
         if (_servo) _servo->resetAndGo();
     }
 
     void handleBack() {
+        _led->blink(100,2);
         Serial.println("[ACTION] Back");
     }
 
     void handleLeft() {
+        _led->blink(100,2);
         Serial.println("[ACTION] Left - Jingle Bells");
-        if (_buzzer) _buzzer->playMelody(jingleBells.notes, jingleBells.durations, jingleBells.length);
+        // if (_buzzer) _buzzer->playMelody(jingleBells.notes, jingleBells.durations, jingleBells.length);
     }
 
     void handleRight() {
+        _led->blink(100,2);
         Serial.println("[ACTION] Right - Gentle Piano");
-        if (_buzzer) _buzzer->playMelody(gentlePiano.notes, gentlePiano.durations, gentlePiano.length);
+        // if (_buzzer) _buzzer->playMelody(gentlePiano.notes, gentlePiano.durations, gentlePiano.length);
     }
 
     void handleC() {
+        _led->blink(100,2);
         Serial.println("[ACTION] C (Clear)");
         if (_ring) _ring->fill(0, 0, 0); // Tắt hết LED
     }
 
     void handleDigit(unsigned long code) {
+        _led->blink(100,2);
         int digit = -1;
-        
+        if (_ring->getBrightness() < 50) {
+            _ring->setBrightness(50); // đảm bảo đủ sáng để thấy màu
+        }
         if (code == BTN_0) {
             if (_ring) _ring->fill(255, 255, 255); // Trắng
             digit = 0;

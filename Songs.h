@@ -36,45 +36,37 @@ struct Song {
 // ===== BÀI HÁT 1: Piano Nhẹ Nhàng (Canon in D - đoạn đơn giản) =====
 const int piano_notes[] = {
     NOTE_D4, NOTE_A4, NOTE_B4, NOTE_FS4, NOTE_G4, NOTE_D4, NOTE_G4, NOTE_A4,
-    NOTE_D4, NOTE_A4, NOTE_B4, NOTE_FS4, NOTE_G4, NOTE_D4, NOTE_G4, NOTE_A4,
-    NOTE_D5, NOTE_CS5, NOTE_B4, NOTE_A4, NOTE_G4, NOTE_FS4, NOTE_E4, NOTE_D4,
-    NOTE_G4, NOTE_FS4, NOTE_E4, NOTE_FS4, NOTE_D4, NOTE_E4, NOTE_FS4, NOTE_G4
+    NOTE_D4, NOTE_A4, NOTE_B4, NOTE_FS4, NOTE_G4, NOTE_D4, NOTE_G4, NOTE_A4
 };
 
 const int piano_durations[] = {
     500, 500, 500, 500, 500, 500, 500, 500,
-    500, 500, 500, 500, 500, 500, 500, 500,
-    400, 400, 400, 400, 400, 400, 400, 400,
-    400, 400, 400, 400, 400, 400, 400, 600
+    500, 500, 500, 500, 500, 500, 500, 500
 };
 
 Song gentlePiano = {
     piano_notes,
     piano_durations,
-    32  // số nốt
+    16  // số nốt
 };
 
 // ===== BÀI HÁT 2: Jingle Bells (đầy đủ hơn) =====
 const int jingle_notes[] = {
     NOTE_E4, NOTE_E4, NOTE_E4, NOTE_REST,
     NOTE_E4, NOTE_E4, NOTE_E4, NOTE_REST,
-    NOTE_E4, NOTE_G4, NOTE_C4, NOTE_D4, NOTE_E4, NOTE_REST,
-    NOTE_F4, NOTE_F4, NOTE_F4, NOTE_F4, NOTE_F4, NOTE_E4, NOTE_E4, NOTE_E4,
-    NOTE_E4, NOTE_D4, NOTE_D4, NOTE_E4, NOTE_D4, NOTE_REST, NOTE_G4
+    NOTE_E4, NOTE_G4, NOTE_C4, NOTE_D4, NOTE_E4, NOTE_REST
 };
 
 const int jingle_durations[] = {
     250, 250, 500, 100,
     250, 250, 500, 100,
-    250, 250, 250, 250, 800, 200,
-    250, 250, 250, 250, 250, 250, 250, 200,
-    250, 250, 250, 250, 500, 200, 500
+    250, 250, 250, 250, 800, 200
 };
 
 Song jingleBells = {
     jingle_notes,
     jingle_durations,
-    29  // số nốt
+    14  // số nốt
 };
 
 // ===== BÀI HÁT 3: Welcome Chime (chào mừng vui tươi) =====

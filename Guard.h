@@ -10,7 +10,7 @@ class Guard {
     String _input;              // Chuỗi nhập từ keypad
     Keypad* _keypad;            // Đối tượng keypad
     uint8_t _maxAttempts;       // Số lần nhập sai tối đa
-    uint8_t _failCount;         // Số lần nhập sai hiện tại
+    uint8_t _failCount = 0;         // Số lần nhập sai hiện tại
     bool _lockedOut;            // Đã bị khóa do nhập sai quá số lần
     unsigned long _lockStartMillis = 0;  // thời điểm bắt đầu khóa
     const unsigned long _lockDuration = 10000; // 10 giây
@@ -20,15 +20,14 @@ class Guard {
     NeoPixelRing* _ring; // Đối tượng vòng LED để cảnh báo (nếu cần)
     // Kiểm tra mật khẩu nhập vào
     bool checkPassword() {
-      _lcd->printAt(0, 0, "F:" + _failCount);
+      _lcd->setFailCount(_failCount);
       if (_input == _password) {
         // Mật khẩu đúng, thực hiện hành động mở khóa ở đây
         _servo->resetAndGo(); // quay servo về vị trí mở khóa
         _failCount = 0; // reset số lần nhập sai
-         _lcd->printAt(0, 0, "F:" + _failCount);
+        _lcd->setFailCount(_failCount);
         _lockedOut = false;
-        _lcd->printLine(1, "Unlocked!");
-        _buzzer->playMelody(welcomeChime.notes, welcomeChime.durations, welcomeChime.length);
+        // _buzzer->playMelody(welcomeChime.notes, welcomeChime.durations, welcomeChime.length);
         _ring->startRainbowRotate(2,3000); // hiệu ứng rainbow xoay
         return true;
       } else {
@@ -36,11 +35,16 @@ class Guard {
         if (_failCount >= _maxAttempts) {
           _lockedOut = true;
           _lockStartMillis = millis();   // bắt đầu khóa
-          _buzzer->alert(4, 400, 400);
+          // _buzzer->alert(4, 400, 400);
           // quá 3 lần thì đợi 10s mới nhập tiếp được
         }
+        if (_failCount >= _maxAttempts) {
+          _buzzer->beep(200,2);
+        }else{
+          _buzzer->beep(200);
+        }
         _failCount++;
-         _lcd->printAt(0, 0, "F:" + _failCount);
+        _lcd->setFailCount(_failCount);
         return false;
       }
     }

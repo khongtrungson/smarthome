@@ -11,11 +11,11 @@ private:
   float R0;
   float T0;
   float Vcc;
-  float alpha;         // hệ số lọc
-  float filteredTemp;  // giá trị đã lọc
+  float alpha;         
+  float filteredTemp;  
   bool initialized;
   unsigned long lastReadTime;
-  unsigned long interval; // thời gian giữa 2 lần đọc (ms)
+  unsigned long interval; 
   LCDDisplay* _lcd;
 
 public:
@@ -30,11 +30,15 @@ public:
     pinMode(pin, INPUT);
   }
 
+  // Giả sử NTC mắc xuống GND, R_fixed nối Vcc
   float readResistance() {
     int adc = analogRead(pin);
-    if (adc <= 0) adc = 1; // tránh chia cho 0
+    if (adc <= 0) adc = 1;
+    if (adc >= 1023) adc = 1022;
     float Vout = (adc / 1023.0) * Vcc;
-    return R_fixed * (Vout / (Vcc - Vout));
+
+    // ✅ Dùng công thức này nếu R_fixed nối Vcc, NTC nối GND
+    return R_fixed * (Vcc / Vout - 1.0);
   }
 
   float readTemperatureK() {
@@ -50,19 +54,17 @@ public:
     unsigned long currentTime = millis();
     if (currentTime - lastReadTime >= interval) {
       lastReadTime = currentTime;
-      Serial.println("Reading temperature...");
-    Serial.println("Resistance: " + String(readResistance()) + " Ohms");
-    Serial.println("Temperature: " + String(readTemperatureC()) + " C");
       float currentTemp = readTemperatureC();
       if (!initialized) {
         filteredTemp = currentTemp;
         initialized = true;
       } else {
-        filteredTemp = alpha * currentTemp + (1 - alpha) * filteredTemp - 120;
-        if (_lcd) {
-          _lcd->printAt(0, 8, "T:"+String(filteredTemp, 1)+" C");
-        }
+        filteredTemp = alpha * currentTemp + (1 - alpha) * filteredTemp;
       }
+      if (_lcd) {
+        _lcd->setTemperature(filteredTemp + 63);
+      }
+      Serial.println("Temperature: " + String(filteredTemp, 2) + " °C");
     }
   }
 
