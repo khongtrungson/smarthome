@@ -1,8 +1,6 @@
 #ifndef BUZZER_H
 #define BUZZER_H
 
-#include <Arduino.h>
-
 class Buzzer {
 private:
     int pin;
@@ -55,11 +53,6 @@ public:
                 nextToggleTime = now + beepDuration;
             }
         }
-    }
-
-    void stop() {
-        remainingBeeps = 0;
-        digitalWrite(pin, LOW);
     }
 };
 

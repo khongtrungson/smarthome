@@ -54,13 +54,6 @@ class MyLed {
       prevMillis = millis();
     }
 
-    void setBrightness(int value) {
-      brightness = constrain(value, 0, 255);
-      if (state == ON) {
-        analogWrite(pin, brightness);
-      }
-    }
-
     void update() {
       if (state == BLINKING) {
         unsigned long currentMillis = millis();

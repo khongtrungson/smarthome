@@ -161,15 +161,6 @@ public:
     hue = 0;
 }
 
-void toggle() {
-    if (isActive) {
-        turnOff();
-    } else {
-        // Bật lại hiệu ứng cuối cùng
-        isActive = true;
-        effectType = 0;
-    }
-}
 };
 
 #endif

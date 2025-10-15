@@ -1,8 +1,6 @@
 #ifndef VIBRATION_SENSOR_H
 #define VIBRATION_SENSOR_H
 
-#include <Arduino.h>
-
 class VibrationSensor {
 private:
     int _pin;                   

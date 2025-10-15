@@ -1,6 +1,5 @@
 #ifndef LCDDISPLAY_H
 #define LCDDISPLAY_H
-#include <Wire.h>
 #include <LiquidCrystal_I2C.h>
 
 class LCDDisplay {
@@ -67,17 +66,6 @@ public:
     }
     void backlightOff() {
         lcd.noBacklight();
-    }
-
-    // Tạo ký tự custom
-    void createChar(uint8_t location, uint8_t charmap[]) {
-        lcd.createChar(location, charmap);
-    }
-
-    // Hiển thị ký tự custom
-    void printCustom(uint8_t col, uint8_t row, uint8_t location) {
-        lcd.setCursor(col, row);
-        lcd.write(location);
     }
 
     // ====== Setter ======

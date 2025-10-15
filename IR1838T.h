@@ -19,28 +19,28 @@ private:
 
 public:
     // ====== Các mã button ======
-    static const unsigned long BTN_POWER      = 0xBA45FF00;
-    static const unsigned long BTN_MENU       = 0xB847FF00;
-    static const unsigned long BTN_TEST       = 0xBB44FF00;
-    static const unsigned long BTN_VOL_PLUS   = 0xBF40FF00; // +
-    static const unsigned long BTN_BACK       = 0xBC43FF00;
-    static const unsigned long BTN_LEFT       = 0xF807FF00;
-    static const unsigned long BTN_PAUSE      = 0xEA15FF00;
-    static const unsigned long BTN_RIGHT      = 0xF609FF00;
-    static const unsigned long BTN_VOL_MINUS  = 0xE619FF00; // -
-    static const unsigned long BTN_C          = 0xF20DFF00;
+    constexpr static unsigned long BTN_POWER      = 0xBA45FF00;
+    constexpr static unsigned long BTN_MENU       = 0xB847FF00;
+    constexpr static unsigned long BTN_TEST       = 0xBB44FF00;
+    constexpr static unsigned long BTN_VOL_PLUS   = 0xBF40FF00; // +
+    constexpr static unsigned long BTN_BACK       = 0xBC43FF00;
+    constexpr static unsigned long BTN_LEFT       = 0xF807FF00;
+    constexpr static unsigned long BTN_PAUSE      = 0xEA15FF00;
+    constexpr static unsigned long BTN_RIGHT      = 0xF609FF00;
+    constexpr static unsigned long BTN_VOL_MINUS  = 0xE619FF00; // -
+    constexpr static unsigned long BTN_C          = 0xF20DFF00;
 
     // ====== Các mã số ======
-    static const unsigned long BTN_0          = 0xE916FF00;
-    static const unsigned long BTN_1          = 0xF30CFF00;
-    static const unsigned long BTN_2          = 0xE718FF00;
-    static const unsigned long BTN_3          = 0xA15EFF00;
-    static const unsigned long BTN_4          = 0xF708FF00;
-    static const unsigned long BTN_5          = 0xE31CFF00;
-    static const unsigned long BTN_6          = 0xA55AFF00;
-    static const unsigned long BTN_7          = 0xBD42FF00;
-    static const unsigned long BTN_8          = 0xAD52FF00;
-    static const unsigned long BTN_9          = 0xB54AFF00;
+    constexpr static unsigned long BTN_0          = 0xE916FF00;
+    constexpr static unsigned long BTN_1          = 0xF30CFF00;
+    constexpr static unsigned long BTN_2          = 0xE718FF00;
+    constexpr static unsigned long BTN_3          = 0xA15EFF00;
+    constexpr static unsigned long BTN_4          = 0xF708FF00;
+    constexpr static unsigned long BTN_5          = 0xE31CFF00;
+    constexpr static unsigned long BTN_6          = 0xA55AFF00;
+    constexpr static unsigned long BTN_7          = 0xBD42FF00;
+    constexpr static unsigned long BTN_8          = 0xAD52FF00;
+    constexpr static unsigned long BTN_9          = 0xB54AFF00;
 
     // ====== Constructor ======
     IR1838T(int pin, MyServo* servo = nullptr, NeoPixelRing* ring = nullptr, 
@@ -126,7 +126,7 @@ private:
     void handlePower() {
         Serial.println("[ACTION] Power");
         _led->blink(100,2);
-        if (_ring) _ring->toggle();
+        if (_ring) _ring->turnOff();
     }
 
     void handleMenu() {
@@ -156,7 +156,7 @@ private:
     void handlePause() {
         _led->blink(100,2);
         Serial.println("[ACTION] Pause");
-        if (_servo) _servo->resetAndGo();
+        if (_servo) _servo->toTarget();
     }
 
     void handleBack() {

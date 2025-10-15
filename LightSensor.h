@@ -51,9 +51,6 @@ public:
             _lastLevel = _level;
         }
     }
-
-    int getValue() const { return _lastValue; }  // 0 hoặc 1
-    int getLevel() const { return _level; }      // 0 = tối, 1 = sáng
 };
 
 #endif

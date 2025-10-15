@@ -1,9 +1,6 @@
 #ifndef HUMIDITY_SENSOR_H
 #define HUMIDITY_SENSOR_H
 
-#include <Arduino.h>
-#include "MyLed.h"
-#include "Buzzer.h"
 
 class HumiditySensor {
 private:

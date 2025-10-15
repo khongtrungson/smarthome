@@ -2,7 +2,6 @@
 #define GUARD_H
 
 #include <Keypad.h>
-#include "Songs.h"
 // Lớp Guard: Điều khiển thiết bị bằng mật khẩu với bàn phím ma trận 4x4
 class Guard {
     private:
@@ -23,7 +22,7 @@ class Guard {
       _lcd->setFailCount(_failCount);
       if (_input == _password) {
         // Mật khẩu đúng, thực hiện hành động mở khóa ở đây
-        _servo->resetAndGo(); // quay servo về vị trí mở khóa
+        _servo->toTarget(); // quay servo về vị trí mở khóa
         _failCount = 0; // reset số lần nhập sai
         _lcd->setFailCount(_failCount);
         _lockedOut = false;
@@ -39,9 +38,9 @@ class Guard {
           // quá 3 lần thì đợi 10s mới nhập tiếp được
         }
         if (_failCount >= _maxAttempts) {
-          _buzzer->beep(200,2);
+          _buzzer->beep(500,2);
         }else{
-          _buzzer->beep(200);
+          _buzzer->beep(500);
         }
         _failCount++;
         _lcd->setFailCount(_failCount);

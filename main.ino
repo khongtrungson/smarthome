@@ -5,17 +5,19 @@
 #include "LCDDisplay.h"
 #include "MyLed.h"
 #include "NeoPixelRing.h"
+#include "Fan.h"
 #include "LightSensor.h"
 #include "Guard.h"
+#include "RainServo.h"
 #include "VibrationSensor.h"
 #include "IR1838T.h"
 #include "TemperatureSensor.h"
-// #include "HumiditySensor.h"
-// #include "GasSensor.h"
+#include "GasSensor.h"
+#include "RainSensor.h"
 
 
 
-// #define DHTTYPE DHT11
+
 #define LED_RING_PIN 10
 #define BUZZER_PIN 11
 #define SERVO_PIN 12
@@ -39,13 +41,20 @@ const char* PASSWORD = "1234";
 Guard guard(PASSWORD, rowPins, colPins, &servo, &buzzer, &lcd, &ring);
 IR1838T irReceiver(IR_PIN, &servo, &ring, &buzzer, &led);
 TemperatureSensor temperatureSensor(TemperatureSensor_PIN, &lcd);
+RainSensor rainSensor(A5);
+GasSensor gasSensor(A4);
 
 void setup() {
   Serial.begin(9600);
   Wire.begin();
+  pinMode(0, OUTPUT);
+  digitalWrite(0, LOW);
   temperatureSensor.begin();
   buzzer.begin();
   servo.begin();
+  servo.setWaitEnabled(true);
+  rainSensor.begin();
+  gasSensor.begin();
   lcd.begin();
   lightSensor.begin();
   ring.begin();
@@ -67,5 +76,6 @@ void loop() {
   buzzer.update();
   lcd.update();
   // humiditySensor.update();
-  // gasSensor.update();
+  gasSensor.update();
+  rainSensor.update();
 }

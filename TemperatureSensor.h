@@ -1,8 +1,6 @@
 #ifndef NTC_H
 #define NTC_H
 
-#include <Arduino.h>
-
 class TemperatureSensor {
 private:
   uint8_t pin;
