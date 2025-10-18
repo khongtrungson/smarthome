@@ -15,7 +15,7 @@ private:
 
 public:
     // Constructor
-    VibrationSensor(int pin, NeoPixelRing* ring, LCDDisplay* lcd, Buzzer* buzzer, MyLed* led, unsigned int threshold = 30, unsigned long debounceTime = 400) {
+    VibrationSensor(int pin, NeoPixelRing* ring, LCDDisplay* lcd, Buzzer* buzzer, MyLed* led, unsigned int threshold = 3, unsigned long debounceTime = 200) {
         _pin = pin;
         _ring = ring;
         _lcd = lcd;

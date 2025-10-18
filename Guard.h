@@ -8,7 +8,7 @@ class Guard {
     const char* _password;      // Mật khẩu đúng
     String _input;              // Chuỗi nhập từ keypad
     Keypad* _keypad;            // Đối tượng keypad
-    uint8_t _maxAttempts;       // Số lần nhập sai tối đa
+    uint8_t _maxAttempts = 3;       // Số lần nhập sai tối đa
     uint8_t _failCount = 0;         // Số lần nhập sai hiện tại
     bool _lockedOut;            // Đã bị khóa do nhập sai quá số lần
     unsigned long _lockStartMillis = 0;  // thời điểm bắt đầu khóa
@@ -26,18 +26,12 @@ class Guard {
         _failCount = 0; // reset số lần nhập sai
         _lcd->setFailCount(_failCount);
         _lockedOut = false;
-        // _buzzer->playMelody(welcomeChime.notes, welcomeChime.durations, welcomeChime.length);
         _ring->startRainbowRotate(2,3000); // hiệu ứng rainbow xoay
         return true;
       } else {
-        // Mật khẩu sai, có thể thêm hành động cảnh báo ở đây
         if (_failCount >= _maxAttempts) {
           _lockedOut = true;
           _lockStartMillis = millis();   // bắt đầu khóa
-          // _buzzer->alert(4, 400, 400);
-          // quá 3 lần thì đợi 10s mới nhập tiếp được
-        }
-        if (_failCount >= _maxAttempts) {
           _buzzer->beep(500,2);
         }else{
           _buzzer->beep(500);

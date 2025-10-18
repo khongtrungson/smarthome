@@ -25,7 +25,7 @@ class MyServo {
 
  public:
     MyServo(int servoPin, int startAngle = 90, int moveAngle = 0,
-             unsigned long delayMs = 3000, unsigned long stepDelayMs = 20)
+             unsigned long delayMs = 3000, unsigned long stepDelayMs = 5)
     {
         pin = servoPin;
         initialAngle = startAngle;
@@ -96,10 +96,13 @@ class MyServo {
                 break;
 
             case WAIT_AT_TARGET:
-                if (currentMillis - lastMoveTime >= delayTime) {
-                    movingToTarget = false;
-                    state = BACK_TO_INITIAL;
-                }
+                // if (currentMillis - lastMoveTime >= delayTime) {
+                //     movingToTarget = false;
+                //     state = BACK_TO_INITIAL;
+                // }
+                delay(3000);
+                movingToTarget = false;
+                 state = BACK_TO_INITIAL;
                 break;
 
             case BACK_TO_INITIAL:

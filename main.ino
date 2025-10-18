@@ -80,4 +80,6 @@ void loop() {
   lcd.update();
   gasSensor.update();
   rainSensor.update();
+  rainServo.update();
+  fan.update();
 }

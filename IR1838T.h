@@ -127,7 +127,7 @@ private:
 
     void handleMenu() {
         _led->blink(100,2);
-        // if (_buzzer) _buzzer->playMelody(welcomeChime.notes, welcomeChime.durations, welcomeChime.length);
+        _rainServo->toTarget();
     }
 
     void handleTest() {
@@ -152,12 +152,13 @@ private:
 
     void handleBack() {
         _led->blink(100,2);
+        _rainServo->toInitial();
     }
 
     void handleLeft() {
         _led->blink(100,2);
         _fan->turnOff();
-
+    }
     void handleRight() {
         _led->blink(100,2);
         _fan->turnOn();
