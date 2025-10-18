@@ -41,10 +41,10 @@ public:
             
                 if (_level == 0) {
                     _led->off();   // tối -> bật LED
-                    _servo->toInitial(); // gập cần mưa
+                    // _servo->toInitial(); // gập cần mưa
                 } else {
                     _led->on();  // sáng -> tắt LED
-                    _servo->toTarget(); // mở cần mưa
+                    // _servo->toTarget(); // mở cần mưa
                 }
         
 

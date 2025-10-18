@@ -16,7 +16,7 @@ public:
     // Khởi tạo chân
     void begin() {
         pinMode(pin, OUTPUT);
-        turnOff(); // Đảm bảo quạt tắt khi khởi động
+         turnOff(); // Đảm bảo quạt tắt khi khởi động
     }
 
     // Bật quạt
