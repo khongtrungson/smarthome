@@ -52,8 +52,6 @@ public:
 
     void incrementCount() {
         _count++;
-        Serial.print("Rung hien tai: ");
-        Serial.println(_count);
     }
 
     void checkThreshold() {

@@ -8,7 +8,6 @@
 #include "Fan.h"
 #include "LightSensor.h"
 #include "Guard.h"
-#include "RainServo.h"
 #include "VibrationSensor.h"
 #include "IR1838T.h"
 #include "TemperatureSensor.h"
@@ -26,6 +25,10 @@
 #define LIGHT_SENSOR_PIN A1
 #define VIBRATION_SENSOR_PIN A2
 #define IR_PIN A3
+#define GAS_PIN A4
+#define RAIN_SENSOR_PIN A5
+#define RAIN_SERVO_PIN 0
+#define FAN_PIN 1
 byte rowPins[4] = {2, 3, 4, 5};    // Chỉnh lại theo mạch của bạn
 byte colPins[4] = {6, 7, 8, 9};    // Chỉnh lại theo mạch của bạn
 Buzzer buzzer(BUZZER_PIN);
@@ -33,26 +36,26 @@ MyServo servo(SERVO_PIN);
 LCDDisplay lcd(0x27, 16, 2);
 MyLed led(LED_PIN);
 NeoPixelRing ring(LED_RING_PIN);
+Fan fan(FAN_PIN);
+MyServo rainServo(RAIN_SERVO_PIN);
 
-
-LightSensor lightSensor(LIGHT_SENSOR_PIN, &led, &ring, &lcd);
+LightSensor lightSensor(LIGHT_SENSOR_PIN, &led, &ring, &lcd, &rainServo);
 VibrationSensor vibrationSensor(VIBRATION_SENSOR_PIN, &ring, &lcd, &buzzer, &led);
 const char* PASSWORD = "1234";
-Guard guard(PASSWORD, rowPins, colPins, &servo, &buzzer, &lcd, &ring);
+Guard guard(PASSWORD, rowPins, colPins, &servo, &buzzer, &lcd, &ring, &rainServo);
 IR1838T irReceiver(IR_PIN, &servo, &ring, &buzzer, &led);
 TemperatureSensor temperatureSensor(TemperatureSensor_PIN, &lcd);
-RainSensor rainSensor(A5);
-GasSensor gasSensor(A4);
+RainSensor rainSensor(RAIN_SENSOR_PIN, &rainServo);
+GasSensor gasSensor(GAS_PIN, &led, &buzzer, &ring, &fan);
 
 void setup() {
-  Serial.begin(9600);
   Wire.begin();
-  pinMode(0, OUTPUT);
-  digitalWrite(0, LOW);
   temperatureSensor.begin();
   buzzer.begin();
   servo.begin();
   servo.setWaitEnabled(true);
+  rainServo.begin();
+  rainServo.setWaitEnabled(false);
   rainSensor.begin();
   gasSensor.begin();
   lcd.begin();
@@ -75,7 +78,6 @@ void loop() {
   servo.update();
   buzzer.update();
   lcd.update();
-  // humiditySensor.update();
   gasSensor.update();
   rainSensor.update();
 }

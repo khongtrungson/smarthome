@@ -10,11 +10,12 @@ private:
     unsigned long _prevUpdateMillis; 
     MyLed* _led;           
     NeoPixelRing* _ring;   
-    LCDDisplay* _lcd;      
+    LCDDisplay* _lcd;
+    MyServo* _servo;      
 
 public:
-    LightSensor(uint8_t pin, MyLed* led, NeoPixelRing* ring, LCDDisplay* lcd) 
-        : _pin(pin), _led(led), _ring(ring), _lcd(lcd),
+    LightSensor(uint8_t pin, MyLed* led, NeoPixelRing* ring, LCDDisplay* lcd, MyServo* servo) 
+        : _pin(pin), _led(led), _ring(ring), _lcd(lcd), _servo(servo),
           _lastValue(0), _level(0), _lastLevel(-1), _prevUpdateMillis(0) {}
 
     void begin() {
@@ -36,17 +37,16 @@ public:
 
         // Chỉ cập nhật khi level thay đổi
         if (_level != _lastLevel) {
-            Serial.print("Light Level: ");
-            Serial.println(_level);
-
             // Cập nhật LED theo level
-            if (_led) {
+            
                 if (_level == 0) {
                     _led->off();   // tối -> bật LED
+                    _servo->toInitial(); // gập cần mưa
                 } else {
                     _led->on();  // sáng -> tắt LED
+                    _servo->toTarget(); // mở cần mưa
                 }
-            }
+        
 
             _lastLevel = _level;
         }

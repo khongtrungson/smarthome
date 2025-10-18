@@ -16,6 +16,8 @@ private:
     NeoPixelRing* _ring;
     Buzzer* _buzzer;
     MyLed* _led;
+    Fan* _fan;
+    MyServo* _rainServo;
 
 public:
     // ====== Các mã button ======
@@ -44,7 +46,7 @@ public:
 
     // ====== Constructor ======
     IR1838T(int pin, MyServo* servo = nullptr, NeoPixelRing* ring = nullptr, 
-            Buzzer* buzzer = nullptr, MyLed* led = nullptr, unsigned long debounce = 150)
+            Buzzer* buzzer = nullptr, MyLed* led = nullptr, Fan* fan = nullptr, MyServo* rainServo = nullptr, unsigned long debounce = 150)
         : recvPin(pin),
           debounceDelay(debounce),
           lastCode(0),
@@ -54,14 +56,15 @@ public:
           _servo(servo),
           _ring(ring),
           _buzzer(buzzer),
-          _led(led)
+          _led(led),
+          _fan(fan),
+          _rainServo(rainServo)
     {}
 
     // ====== Khởi tạo ======
     void begin() {
         IrReceiver.begin(recvPin, DISABLE_LED_FEEDBACK);
         // Chỉ enable protocol 8
-        Serial.println("IR Receiver Started...");
     }
 
     // ====== Cập nhật & xử lý tín hiệu ======
@@ -82,10 +85,6 @@ public:
                 lastCode = decodedCode;
                 lastDecodeTime = now;
                 newCodeAvailable = true;
-               Serial.print("Decoded IR code: ");
-                Serial.println(currentCode, HEX);
-                Serial.println(IrReceiver.decodedIRData.protocol);
-
             }
 
             IrReceiver.resume();
@@ -114,8 +113,6 @@ public:
                     break;
 
                 default:
-                    Serial.print("Unknown code: ");
-                    Serial.println(currentCode, HEX);
                     break;
             }
         }
@@ -124,61 +121,50 @@ public:
 private:
     // ====== Các hàm xử lý hành động ======
     void handlePower() {
-        Serial.println("[ACTION] Power");
         _led->blink(100,2);
         if (_ring) _ring->turnOff();
     }
 
     void handleMenu() {
         _led->blink(100,2);
-        Serial.println("[ACTION] Menu");
         // if (_buzzer) _buzzer->playMelody(welcomeChime.notes, welcomeChime.durations, welcomeChime.length);
     }
 
     void handleTest() {
         _led->blink(100,2);
-        Serial.println("[ACTION] Test");
         if (_ring) _ring->startRainbowRotate(2, 3000);
     }
 
     void handleVolPlus() {
         _led->blink(100,2);
-        Serial.println("[ACTION] Volume +");
         if (_ring) _ring->setBrightness(10);
     }
 
     void handleVolMinus() {
         _led->blink(100,2);
-        Serial.println("[ACTION] Volume -");
         if (_ring) _ring->setBrightness(-10);
     }
 
     void handlePause() {
         _led->blink(100,2);
-        Serial.println("[ACTION] Pause");
         if (_servo) _servo->toTarget();
     }
 
     void handleBack() {
         _led->blink(100,2);
-        Serial.println("[ACTION] Back");
     }
 
     void handleLeft() {
         _led->blink(100,2);
-        Serial.println("[ACTION] Left - Jingle Bells");
-        // if (_buzzer) _buzzer->playMelody(jingleBells.notes, jingleBells.durations, jingleBells.length);
-    }
+        _fan->turnOff();
 
     void handleRight() {
         _led->blink(100,2);
-        Serial.println("[ACTION] Right - Gentle Piano");
-        // if (_buzzer) _buzzer->playMelody(gentlePiano.notes, gentlePiano.durations, gentlePiano.length);
+        _fan->turnOn();
     }
 
     void handleC() {
         _led->blink(100,2);
-        Serial.println("[ACTION] C (Clear)");
         if (_ring) _ring->fill(0, 0, 0); // Tắt hết LED
     }
 
@@ -229,10 +215,6 @@ private:
             digit = 9;
         }
 
-        if (digit != -1) {
-            Serial.print("[ACTION] Number ");
-            Serial.println(digit);
-        }
     }
 };
 

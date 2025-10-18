@@ -144,7 +144,6 @@ public:
     }
 
     void setBrightness(int value) {
-        // Serial.print("NeoPixel Brightness: "+String(value)+"\n");
         strip.show();
         if (brightness + value < 0) brightness = 0;
         else if (brightness + value > 255) brightness = 255;

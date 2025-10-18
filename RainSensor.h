@@ -5,10 +5,10 @@ class RainSensor {
 private:
     int pin;               // Chân digital kết nối cảm biến
     bool lastRaining;      // Trạng thái mưa trước đó
-    RainServo* _servo; // pointer đến object RainServo (nếu cần)
+    MyServo* _servo;    // Con trỏ đến đối tượng MyServo để điều khiển cần mưa
 public:
     // Constructor - truyền vào chân digital
-    RainSensor(int digitalPin, RainServo* servo=nullptr)
+    RainSensor(int digitalPin, MyServo* servo)
         : pin(digitalPin),
           lastRaining(false),
           _servo(servo)
@@ -32,20 +32,10 @@ public:
         if (currentReading != lastRaining) {
             lastRaining = currentReading;
             if (currentReading == LOW) {
-                // Có mưa
-                // _servo->setRaining(true);
-                Serial.println("[RainSensor] It is raining.");
-            } else {
-                // _servo->setRaining(false);
-                Serial.println("[RainSensor] It stopped raining.");
+               _servo->toTarget(); // Mưa bắt đầu - mở cần mưa
             }
         }
     }
-
-    // Kiểm tra có mưa không
-
-
-    // Kiểm tra xem có thay đổi trạng thái (mưa bắt đầu / mưa tạnh)
 
 };
 

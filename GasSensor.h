@@ -26,11 +26,10 @@ public:
         if (val != lastState) {
             lastState = val;
             if (val == HIGH) {
-            // _led->blink(300, 6); // nhấp nháy LED 6 lần
-            // _buzzer->beep(5000); // cảnh báo 6 lần
-            // _ring->fill(255, 255, 0); // Vàng
-            // _fan->turnOn(); // bật quạt
-            Serial.println("[GasSensor] Gas detected! Activating alarm and fan.");
+            _led->blink(300, 6); // nhấp nháy LED 6 lần
+            _buzzer->beep(5000); // cảnh báo 6 lần
+            _ring->fill(255, 255, 0); // Vàng
+            _fan->turnOn(); // bật quạt
             }
         }
     }

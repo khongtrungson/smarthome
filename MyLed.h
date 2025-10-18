@@ -64,7 +64,6 @@ class MyLed {
 
           if (isActive) analogWrite(pin, brightness);
           else analogWrite(pin, 0);
-
           // Hết số lần blink → khôi phục trạng thái trước đó
           if (blinkNum <= 0) {
             state = prevState;
